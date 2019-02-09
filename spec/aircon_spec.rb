@@ -1,23 +1,15 @@
 require_relative('../app.rb')
 
 describe do
-  specify {
-    arp_response = <<~EOF
-    ? (192.168.1.29) at <incomplete> on eth0
-    ? (192.168.1.36) at 00:1d:c9:9a:26:99 [ether] on eth0
-    ? (192.168.1.51) at 8c:85:90:ba:a5:35 [ether] on eth0
-    ntt.setup (192.168.1.1) at 10:4b:46:d8:e1:42 [ether] on eth0
-    ? (192.168.1.39) at 08:66:98:05:da:e3 [ether] on eth0
-    ec2-54-221-205-80.compute-1.amazonaws.com (54.221.205.80) at <incomplete> on eth0
-    ? (192.168.1.55) at 48:65:ee:1a:0f:7e [ether] on eth0
-    ? (192.168.1.25) at 18:31:bf:db:18:c5 [ether] on eth0
-    ? (192.168.1.32) at 40:b3:95:a0:52:e0 [ether] on eth0
-    ? (192.168.1.40) at 3c:2e:f9:c0:8a:f8 [ether] on eth0
-    ? (192.168.1.21) at 00:1d:c9:9a:30:90 [ether] on eth0
-    ? (192.168.1.34) at 00:1d:c9:9a:30:c2 [ether] on eth0
-    EOF
-    expect(extract_ip_address(arp_response, '00:1d:c9:9a:30:c2')).to eq '192.168.1.34'
-    expect(extract_ip_address(arp_response, '00:1d:c9:9a:26:99')).to eq '192.168.1.36'
-    expect(extract_ip_address(arp_response, '48:65:ee:1a:0f:7e')).to eq '192.168.1.55'
-  }
+  describe 'extract_ip_address' do
+    specify {
+      html = <<~EOF
+      <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="default-style" content="text/css"><link rel="stylesheet" type="text/css" href="/ntt/resources/css/style.css"><script type="text/javascript" src="/ntt/resources/js/jquery.js"></script><script type="text/javascript" src="/ntt/resources/js/jquery.i18n.properties.js"></script><script type="text/javascript" src="/ntt/resources/js/common.js"></script><script type="text/javascript" src="/ntt/webgui/resources/js"></script><title>DHCPv4サーバ払い出し状況</title></head><body><div id="title"><h1>DHCPv4サーバ払い出し状況</h1><div id="help"><a href="/ntt/webgui/help/information/dhcpV4Server.html" target="_blank"><img src="/ntt/resources/image/help.png" alt="help" /></a></div></div><div id="breadcrumb">トップページ ＞ 情報 ＞ <b>DHCPv4サーバ払い出し状況</b></div><div class="section"><h2>[ 配布情報 ]</h2><table class="setting"> <tbody><tr><th rowspan="1" colspan="1">DNSサーバアドレス</th><td>192.168.1.1</td></tr><tr><th rowspan="1" colspan="1">SIPサーバアドレス</th><td>192.168.1.1</td></tr><tr><th rowspan="1" colspan="1">内線REGISTERドメイン</th><td>ntt-west.ne.jp</td></tr></tbody></table></div><hr/><div class="section"><h2>[ 払い出し状況 ]</h2><table class="setting"> <tbody><tr><th rowspan="1" colspan="1">現在の払い出し件数</th><td>40/240</td></tr><tr><th rowspan="1" colspan="1">現在の時刻</th><td>2019/02/09 18:40:36</td></tr></tbody></table><br><table class="data"> <thead><tr><th rowspan="1" colspan="1">IPv4アドレス/マスク長</th><th rowspan="1" colspan="1">MACアドレス</th><th rowspan="1" colspan="1">リース時間</th></tr></thead><tbody><tr><td>192.168.1.11/24</td><td>00:17:88:b0:c1:d4</td><td>2019/02/09 20:54:38</td></tr><tr><td>192.168.1.12/24</td><td>54:60:09:3c:20:14</td><td>2019/02/09 21:10:43</td></tr><tr><td>192.168.1.26/24</td><td>20:df:b9:2b:de:d8</td><td>2019/02/09 21:49:24</td></tr><tr><td>192.168.1.42/24</td><td>b8:41:a4:af:ae:57</td><td>2019/02/09 21:04:02</td></tr><tr><td>192.168.1.13/24</td><td>40:f0:2f:c3:22:d9</td><td>2019/02/09 21:38:53</td></tr><tr><td>192.168.1.14/24</td><td>60:6b:ff:c1:78:8e</td><td>2019/02/09 22:31:48</td></tr><tr><td>192.168.1.78/24</td><td>60:01:94:58:f5:e6</td><td>2019/02/09 22:12:33</td></tr><tr><td>192.168.1.15/24</td><td>00:1d:12:bd:d2:b8</td><td>2019/02/09 21:17:45</td></tr><tr><td>192.168.1.16/24</td><td>a4:12:42:a2:58:10</td><td>2019/02/09 19:20:55</td></tr><tr><td>192.168.1.64/24</td><td>50:dc:e7:2f:a0:9d</td><td>2019/02/09 21:21:01</td></tr><tr><td>192.168.1.41/24</td><td>78:7b:8a:90:bc:35</td><td>2019/02/09 22:06:39</td></tr><tr><td>192.168.1.73/24</td><td>b8:27:eb:d4:00:0e</td><td>2019/02/09 21:48:04</td></tr><tr><td>192.168.1.19/24</td><td>a8:13:74:65:35:65</td><td>2019/02/09 22:01:07</td></tr><tr><td>192.168.1.67/24</td><td>5c:41:5a:3f:d1:e8</td><td>2019/02/09 22:17:28</td></tr><tr><td>192.168.1.22/24</td><td>00:1f:cf:60:ba:ba</td><td>2019/02/09 22:11:40</td></tr><tr><td>192.168.1.17/24</td><td>2c:35:57:01:85:01</td><td>2019/02/09 22:17:19</td></tr><tr><td>192.168.1.46/24</td><td>40:30:04:ea:28:06</td><td>2019/02/09 22:32:36</td></tr><tr><td>192.168.1.30/24</td><td>2c:35:57:01:42:e5</td><td>2019/02/09 22:25:18</td></tr><tr><td>192.168.1.43/24</td><td>00:c0:8f:70:1c:71</td><td>2019/02/09 20:49:25</td></tr><tr><td>192.168.1.58/24</td><td>84:af:ec:50:91:dd</td><td>2019/02/09 20:41:44</td></tr><tr><td>192.168.1.48/24</td><td>2c:9e:fc:91:f3:ae</td><td>2019/02/09 20:51:45</td></tr><tr><td>192.168.1.20/24</td><td>00:1d:c9:98:a2:3e</td><td>2019/02/09 19:35:31</td></tr><tr><td>192.168.1.21/24</td><td>00:1d:c9:9a:30:90</td><td>2019/02/09 19:58:00</td></tr><tr><td>192.168.1.23/24</td><td>00:1d:c9:9a:30:80</td><td>2019/02/09 19:58:00</td></tr><tr><td>192.168.1.25/24</td><td>18:31:bf:db:18:c5</td><td>2019/02/09 20:51:48</td></tr><tr><td>192.168.1.24/24</td><td>d8:6c:63:5b:9b:71</td><td>2019/02/09 22:29:01</td></tr><tr><td>192.168.1.31/24</td><td>00:24:e4:0a:d8:7c</td><td>2019/02/09 16:46:38</td></tr><tr><td>192.168.1.88/24</td><td>08:f4:ab:83:04:d5</td><td>2019/02/09 21:04:07</td></tr><tr><td>192.168.1.51/24</td><td>8c:85:90:ba:a5:35</td><td>2019/02/09 21:22:43</td></tr><tr><td>192.168.1.49/24</td><td>cc:82:eb:da:10:03</td><td>2019/02/09 21:30:02</td></tr><tr><td>192.168.1.37/24</td><td>0c:d7:46:d2:a9:16</td><td>2019/02/09 21:21:59</td></tr><tr><td>192.168.1.38/24</td><td>ac:bc:32:d3:bc:37</td><td>2019/02/09 21:22:25</td></tr><tr><td>192.168.1.45/24</td><td>c4:61:8b:1a:f4:51</td><td>2019/02/09 21:21:44</td></tr><tr><td>192.168.1.50/24</td><td>14:bd:61:ce:39:66</td><td>2019/02/09 21:06:40</td></tr><tr><td>192.168.1.36/24</td><td>00:1d:c9:9a:26:99</td><td>2019/02/09 19:57:54</td></tr><tr><td>192.168.1.33/24</td><td>ac:3f:a4:bf:d2:68</td><td>2019/02/09 19:59:59</td></tr><tr><td>192.168.1.40/24</td><td>3c:2e:f9:c0:8a:f8</td><td>2019/02/09 21:04:02</td></tr><tr><td>192.168.1.53/24</td><td>7c:7a:91:0f:5c:94</td><td>2019/02/09 22:27:05</td></tr><tr><td>192.168.1.34/24</td><td>00:1d:c9:9a:30:c2</td><td>2019/02/09 21:44:46</td></tr><tr><td>192.168.1.29/24</td><td>e8:9d:87:a7:05:77</td><td>2019/02/09 21:54:39</td></tr></tbody></table></div><script type="text/javascript">$(function(){refreshMenu("60-50",1548784511680);});</script></body></html>⏎
+      EOF
+      expect(extract_ip_address(html, '00:1d:c9:9a:30:c2', 'utf-8')).to eq '192.168.1.34'
+      expect(extract_ip_address(html, '00:1d:c9:9a:26:99', 'utf-8')).to eq '192.168.1.36'
+      expect(extract_ip_address(html, '00:1d:c9:9a:30:80', 'utf-8')).to eq '192.168.1.23'
+      expect(extract_ip_address(html, '11:65:ee:1a:0f:7e', 'utf-8')).to eq nil
+    }
+  end
 end

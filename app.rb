@@ -1,5 +1,7 @@
 require 'beebotte'
 require 'dotenv/load'
+require 'open-uri'
+require 'nokogiri'
 
 def handle(message)
   data = JSON.parse(message)['data'].first
@@ -14,6 +16,7 @@ def handle(message)
                 when 'office'
                   ENV['MAC_OFFICE']
                 end
+  puts mac_address
   ip_address = rarp(mac_address)
   if action == 'on'
     send_data(ip_address, ENV['ON_MESSAGE'])
@@ -22,25 +25,36 @@ def handle(message)
   end
 end
 
-def arp
-  `arp -a`
-end
-
 def rarp(mac_address)
-  extract_ip_address(arp, mac_address)
+  certs = [ENV['BASIC_USER'], ENV['BASIC_PASSWORD']]
+  charset = nil
+  url = ENV['DHCP_SERVER_URL']
+
+  html = open(url, {:http_basic_authentication => certs}) do |f|
+    charset = f.charset
+    f.read
+  end
+  extract_ip_address(html, mac_address, charset)
 end
 
-def extract_ip_address(arp_response, mac_address)
-  arp_response.each_line do |line|
-    if m = line.match(/.*\((?<ip>\S+)\) at #{mac_address}.*/)
-      return m[:ip]
-    end
+def extract_ip_address(html, mac_address, charset)
+  doc = Nokogiri::HTML.parse(html, nil, charset)
+  trs = doc.xpath('//table[@class="data"]//tbody//tr')
+  tr = trs.find do |tr|
+    tr.search("td[2]").text.strip == mac_address
+  end
+
+  if tr
+    tr.search("td[1]").text.split('/').first
+  else
+    nil
   end
 end
 
 def send_data(ip_address, message)
   puts ip_address
   puts message
+  return if ip_address.nil?
   uri = URI.parse("http://#{ip_address}/smart/")
   response = Net::HTTP.post(uri, message)
   puts response.body
